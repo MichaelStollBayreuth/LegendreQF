@@ -20,3 +20,4 @@ This repository contains *lean3* code (using mathlib) formalizing a proof of
  The statement implies the *Hasse Principle* (for the ternary quadratic forms considered):
  A ternary quadratic form as above has a nontrivial rational zero if and only if
  it has a nontrivial real zero and nontrivial $p$-adic zeros for all primes $p$.
+ (However, this is not (yet) part of the formalization.)

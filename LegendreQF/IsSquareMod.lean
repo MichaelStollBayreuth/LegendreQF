@@ -136,7 +136,7 @@ theorem pow_of_coprime {a m : R} (hs : IsSquareMod a m) (hc : IsCoprime m (2 * a
     IsSquareMod a (m ^ n) := by
   induction' n with n ih
   · simp only [pow_zero, isSquareMod_mod_one]
-  · rw [pow_succ, mul_comm]
+  · rw [pow_succ', mul_comm]
     cases' n with n'
     · simpa only [pow_zero, one_mul] using hs
     · exact ih.mul_of_dvd_of_coprime (dvd_pow (dvd_refl m) NeZero.out) hc
@@ -183,12 +183,12 @@ theorem iff_isSquare (a m : ℤ) : IsSquareMod a m ↔ IsSquare (a : ZMod m.natA
   refine' ⟨fun H => _, fun H => _⟩
   · obtain ⟨b, h⟩ := H
     refine' ⟨(b : ZMod m.natAbs), _⟩
-    rwa [← sq, ← Int.cast_pow, ← sub_eq_zero, ← Int.cast_sub, ZMod.int_cast_zmod_eq_zero_iff_dvd,
-      Int.coe_natAbs, abs_dvd]
+    rwa [← sq, ← Int.cast_pow, ← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd,
+      Int.natCast_natAbs, abs_dvd]
   · obtain ⟨b, h⟩ := H
     refine' ⟨b.valMinAbs, _⟩
     rw [← ZMod.coe_valMinAbs b, ← sq, ← Int.cast_pow, ← sub_eq_zero, ← Int.cast_sub] at h
-    rwa [← abs_dvd, ← Int.coe_natAbs, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
+    rwa [← abs_dvd, ← Int.natCast_natAbs, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
 
 /-- If `m` is a natural number, then `IsSquareMod a m` is equivalent with
 `IsSquare (a : ZMod m)`. -/
@@ -214,4 +214,3 @@ theorem sum_of_squares_of_isSquareMod_neg_one {b : ℤ} (hb : 0 ≤ b) (h : IsSq
 end IsSquareMod
 
 end Integer
-

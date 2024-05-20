@@ -67,8 +67,8 @@ theorem IsSoluble.iff_scale {a b c d : ℤ} (hd : d ≠ 0) :
 /-- Solubility is preserved when the coefficients are negated. -/
 theorem IsSoluble.neg {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble (-a) (-b) (-c) := by
   obtain ⟨x, y, z, h, hnt⟩ := h
-  refine' ⟨x, y, z, _, hnt⟩
-  simp_rw [neg_mul, ← neg_add, h]
+  refine ⟨x, y, z, ?_, hnt⟩
+  simp_rw [neg_mul, ← neg_add, h, neg_zero]
 
 theorem IsSoluble.mul_iff_mul_mul {a b c d : ℤ} (hd : d ≠ 0) :
     IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) := by
@@ -118,7 +118,7 @@ theorem IsSoluble.iff_mul_sq {a b c d : ℤ} (hd : d ≠ 0) :
 theorem IsSoluble.primitive {a b c : ℤ} (h : IsSoluble a b c) :
     ∃ x y z, a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧ x.gcd (y.gcd z) = 1 := by
   obtain ⟨x, y, z, h, hnt⟩ := h
-  obtain ⟨g, x₁, y₁, z₁, hg, hgx, hgy, hgz, hg'⟩ := Int.make_primitive_3 x y z
+  obtain ⟨g, x₁, y₁, z₁, hg, hgx, hgy, hgz, hg'⟩ := Int.exists_gcd_gcd_eq_one x y z
   refine' ⟨x₁, y₁, z₁, _, hg'⟩
   rw [hgx, hgy, hgz] at h
   have hg₀ : 0 < g := by
@@ -160,18 +160,18 @@ theorem IsSoluble.primitive'_help₂ {a b c x y z : ℤ} (h : CoeffAss a b c)
     (hs : a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0) (hg : x.gcd (y.gcd z) = 1) : IsCoprime x y := by
   rw [← Int.gcd_eq_one_iff_coprime, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp
-  by_contra' hf
+  by_contra! hf
   obtain ⟨x₁, rfl⟩ : ↑p ∣ x := by
-    rw [← Int.coe_nat_dvd] at hf
-    exact hf.trans (Int.gcd_dvd_left _ _)
+    rw [← Int.natCast_dvd_natCast] at hf
+    exact hf.trans Int.gcd_dvd_left
   obtain ⟨y₁, rfl⟩ : ↑p ∣ y := by
-    rw [← Int.coe_nat_dvd] at hf
-    exact hf.trans (Int.gcd_dvd_right _ _)
+    rw [← Int.natCast_dvd_natCast] at hf
+    exact hf.trans Int.gcd_dvd_right
   rw [add_eq_zero_iff_neg_eq, mul_pow, mul_pow, ← mul_assoc, ← mul_assoc, mul_comm a, mul_comm b,
     mul_assoc, mul_assoc, ← mul_add, ← mul_neg, sq, mul_assoc] at hs
   have hpcz : (p : ℤ) ∣ c * z ^ 2 := ⟨_, hs.symm⟩
   have hpz : ¬↑p ∣ z := by
-    by_contra' hpz
+    by_contra! hpz
     obtain ⟨z₁, rfl⟩ := hpz
     rw [Int.gcd_mul_left, Int.natAbs_ofNat, Nat.cast_mul, Int.gcd_mul_left, Int.natAbs_ofNat] at hg
     exact hp.not_dvd_one ⟨_, hg.symm⟩
@@ -193,18 +193,18 @@ theorem IsSoluble.primitive'_help₁ {a b c x y z : ℤ} (h : CoeffAss a b c)
     (hs : a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0) (hg : x.gcd (y.gcd z) = 1) : IsCoprime a y := by
   rw [← Int.gcd_eq_one_iff_coprime, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp
-  by_contra' hf
+  by_contra! hf
   have hyz : IsCoprime y z :=
     by
     replace hs : b * y ^ 2 + c * z ^ 2 + a * x ^ 2 = 0 := by rw [← hs]; ring
     replace hg : y.gcd (z.gcd x) = 1 := by rwa [← Int.gcd_assoc, Int.gcd_comm]
     exact IsSoluble.primitive'_help₂ h.rotate hs hg
   obtain ⟨a₁, rfl⟩ : ↑p ∣ a := by
-    rw [← Int.coe_nat_dvd] at hf
-    exact hf.trans (Int.gcd_dvd_left _ _)
+    rw [← Int.natCast_dvd_natCast] at hf
+    exact hf.trans Int.gcd_dvd_left
   obtain ⟨y₁, rfl⟩ : ↑p ∣ y := by
-    rw [← Int.coe_nat_dvd] at hf
-    exact hf.trans (Int.gcd_dvd_right _ _)
+    rw [← Int.natCast_dvd_natCast] at hf
+    exact hf.trans Int.gcd_dvd_right
   rw [add_eq_zero_iff_neg_eq, mul_pow, ← mul_assoc, mul_comm b, sq (p : ℤ), mul_assoc, mul_assoc,
     mul_assoc, ← mul_add, ← mul_neg] at hs
   have hpcz : (p : ℤ) ∣ c * z ^ 2 := ⟨_, hs.symm⟩
@@ -257,7 +257,7 @@ theorem condition₁_iff {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠
           false_and_iff, not_false_iff, or_false_iff, false_or_iff, and_true_iff] <;>
       cases' hb.lt_or_lt with hb₁ hb₁ <;>
     simp only [asymm hb₁, hb₁, IsEmpty.forall_iff, forall_true_left, false_and_iff, true_and_iff,
-      or_false_iff, false_or_iff, lt_or_lt_iff_ne, Ne.def, true_iff_iff, le_iff_eq_or_lt, hc.symm,
+      or_false_iff, false_or_iff, lt_or_lt_iff_ne, Ne, true_iff_iff, le_iff_eq_or_lt, hc.symm,
       hc, not_false_iff, or_iff_right_iff_imp]
 
 /-- This is the second solubility condition in Legendre's theorem: the negative product
@@ -357,7 +357,7 @@ theorem descent {a b : ℤ} (hb : 0 < b) (hba : b < a) (h : IsSquareMod b a) :
       _ = a * a := sq a
   have hm₀ : m ≠ 0 := by
     rintro rfl
-    rw [zero_pow zero_lt_two, MulZeroClass.zero_mul, eq_comm, neg_eq_zero] at ht
+    rw [zero_pow two_ne_zero, MulZeroClass.zero_mul, eq_comm, neg_eq_zero] at ht
     exact htn.ne ht
   calc
     A = 1 * A := (one_mul A).symm
@@ -370,7 +370,7 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
     (h₃ : IsSquareMod (-a * b / (a.gcd b : ℤ) ^ 2) (a.gcd b : ℤ))
     (h' : c ^ 2 - b = a * (m ^ 2 * A)) :
     IsSquareMod A b := by
-  obtain ⟨g, a₁, b₁, c₁, hg, rfl, rfl, rfl, h⟩ := Int.make_primitive_3 a b c
+  obtain ⟨g, a₁, b₁, c₁, hg, rfl, rfl, rfl, h⟩ := Int.exists_gcd_gcd_eq_one a b c
   have hg₀ : g ≠ 0 := left_ne_zero_of_mul sa.ne_zero
   have hag := Int.isCoprime_of_squarefree_mul sa
   have hbg := Int.isCoprime_of_squarefree_mul sb
@@ -417,7 +417,7 @@ is preserved when we replace `a` by `A` (as obtained from `legendre.descent`). -
 theorem condition_iii {A a b c m : ℤ} (sb : Squarefree b) (h₁ : IsSquareMod a b)
     (h' : c ^ 2 - b = a * (m ^ 2 * A)) :
     IsSquareMod (-A * b / (A.gcd b : ℤ) ^ 2) (A.gcd b : ℤ) := by
-  obtain ⟨g, A₁, b₁, c₁, hg, rfl, rfl, rfl, h⟩ := Int.make_primitive_3 A b c
+  obtain ⟨g, A₁, b₁, c₁, hg, rfl, rfl, rfl, h⟩ := Int.exists_gcd_gcd_eq_one A b c
   have hg₀ : g ≠ 0 := left_ne_zero_of_mul sb.ne_zero
   have hbg := Int.isCoprime_of_squarefree_mul sb
   replace h' : g * (c₁ ^ 2 * g - b₁) = g * (a * (m ^ 2 * A₁)) := by linear_combination h'
@@ -443,10 +443,10 @@ then there is also a solution for `a` and `b`. -/
 theorem isSoluble_transfer {A a b c m : ℤ} (hm : m ≠ 0) (hA : A ≠ 0) (ha : a ≠ 0)
     (h : IsSoluble A b (-1)) (h' : c ^ 2 - b = a * (m ^ 2 * A)) : IsSoluble a b (-1) := by
   obtain ⟨x, y, z, h, hnt⟩ := h
-  refine'
+  refine
     ⟨m * A * x, c * y + z, b * y + c * z, by
-      linear_combination a * m ^ 2 * A * h + (b * y ^ 2 - z ^ 2) * h', _⟩
-  by_contra' hf
+      linear_combination a * m ^ 2 * A * h + (b * y ^ 2 - z ^ 2) * h', ?_⟩
+  by_contra! hf
   obtain ⟨h₁, h₂, h₃⟩ := hf
   have hy : (c ^ 2 - b) * y = 0 := by linear_combination c * h₂ - h₃
   have hz : (c ^ 2 - b) * z = 0 := by linear_combination -b * h₂ + c * h₃
@@ -477,7 +477,7 @@ theorem isSoluble_neg_one_of_lt {a b : ℤ} (sa : Squarefree a) (sb : Squarefree
   · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at b3
     exact (ih b (Nat.cast_lt.mp hba) _ sf hA sb (Nat.cast_lt.mpr hAb) b2 b1 b3).swap₁₂
   · rw [neg_mul, Int.gcd_self, Int.natAbs_ofNat, ← sq, Int.neg_ediv_of_dvd (Int.dvd_refl _),
-        Int.ediv_self (sq_pos_of_ne_zero _ hb.ne').ne'] at b3
+        Int.ediv_self (sq_pos_of_ne_zero hb.ne').ne'] at b3
     exact isSoluble_equal hb b3
   · exact ih A (Nat.cast_lt.mp te) _ sb hb sf (Nat.cast_lt.mpr hAb) b1 b2 b3
 
@@ -492,7 +492,7 @@ theorem isSoluble_neg_one {a b : ℤ} (ha₀ : 0 < a) (hb₀ : 0 < b) (ha : Squa
   · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at hd
     exact (isSoluble_neg_one_of_lt hb ha ha₀ hab' hba hab hd).swap₁₂
   · rw [neg_mul, Int.gcd_self, ← sq, Int.natAbs_sq, Int.neg_ediv_of_dvd ⟨1, (mul_one _).symm⟩,
-      Int.ediv_self (sq_pos_of_ne_zero _ hb₀.ne').ne', ← Int.eq_natAbs_of_zero_le ha₀.le] at hd
+      Int.ediv_self (sq_pos_of_ne_zero hb₀.ne').ne', ← Int.eq_natAbs_of_zero_le ha₀.le] at hd
     exact isSoluble_equal ha₀ hd
   · exact isSoluble_neg_one_of_lt ha hb hb₀ hab' hab hba hd
 
@@ -564,4 +564,3 @@ theorem isSoluble_iff {a b c : ℤ} (h : CoeffAss a b c) :
   ⟨fun H => necessary H h, fun H => sufficient H.1 H.2 h⟩
 
 end Legendre
-

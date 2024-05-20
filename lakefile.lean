@@ -10,5 +10,6 @@ require mathlib from git
 
 @[default_target]
 lean_lib «LegendreQF» {
+  globs := #[.submodules `LegendreQF]
   -- add any library configuration options here
 }

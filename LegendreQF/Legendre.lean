@@ -49,15 +49,15 @@ theorem IsSoluble.rotate {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble b c a :
 /-- Solubility is preserved when the coefficients are multiplied by the same nonzero integer. -/
 theorem IsSoluble.iff_scale {a b c d : ℤ} (hd : d ≠ 0) :
     IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, y, z, h, hnt⟩ := h
-    refine' ⟨x, y, z, _, hnt⟩
+    refine ⟨x, y, z, ?_, hnt⟩
     apply_fun (· * ·) d at h
     rw [MulZeroClass.mul_zero] at h
     rw [← h]
     ring
   · obtain ⟨x, y, z, h, hnt⟩ := h
-    refine' ⟨x, y, z, _, hnt⟩
+    refine ⟨x, y, z, ?_, hnt⟩
     have :
       d * a * x ^ 2 + d * b * y ^ 2 + d * c * z ^ 2 = d * (a * x ^ 2 + b * y ^ 2 + c * z ^ 2) := by
       ring
@@ -72,9 +72,9 @@ theorem IsSoluble.neg {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble (-a) (-b) 
 
 theorem IsSoluble.mul_iff_mul_mul {a b c d : ℤ} (hd : d ≠ 0) :
     IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, y, z, h, h₀⟩ := h
-    refine' ⟨d * x, d * y, z, _, _⟩
+    refine ⟨d * x, d * y, z, ?_, ?_⟩
     · apply_fun (· * ·) d at h
       rw [MulZeroClass.mul_zero] at h
       rw [← h]
@@ -84,7 +84,7 @@ theorem IsSoluble.mul_iff_mul_mul {a b c d : ℤ} (hd : d ≠ 0) :
       · exact Or.inr (Or.inl <| mul_ne_zero hd h₀)
       · exact Or.inr (Or.inr h₀)
   · obtain ⟨x, y, z, h, h₀⟩ := h
-    refine' ⟨x, y, d * z, _, _⟩
+    refine ⟨x, y, d * z, ?_, ?_⟩
     · apply_fun (· * ·) d at h
       rw [MulZeroClass.mul_zero] at h
       rw [← h]
@@ -96,15 +96,15 @@ theorem IsSoluble.mul_iff_mul_mul {a b c d : ℤ} (hd : d ≠ 0) :
 
 theorem IsSoluble.iff_mul_sq {a b c d : ℤ} (hd : d ≠ 0) :
     IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, y, z, h, h₀⟩ := h
-    refine' ⟨x, y, d * z, by rw [← h]; ring, _⟩
+    refine ⟨x, y, d * z, by rw [← h]; ring, ?_⟩
     · rcases h₀ with (h₀ | h₀ | h₀)
       · exact Or.inl h₀
       · exact Or.inr (Or.inl h₀)
       · exact Or.inr (Or.inr <| mul_ne_zero hd h₀)
   · obtain ⟨x, y, z, h, h₀⟩ := h
-    refine' ⟨d * x, d * y, z, _, _⟩
+    refine ⟨d * x, d * y, z, ?_, ?_⟩
     · apply_fun (· * ·) (d ^ 2) at h
       rw [MulZeroClass.mul_zero] at h
       rw [← h]
@@ -119,7 +119,7 @@ theorem IsSoluble.primitive {a b c : ℤ} (h : IsSoluble a b c) :
     ∃ x y z, a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧ x.gcd (y.gcd z) = 1 := by
   obtain ⟨x, y, z, h, hnt⟩ := h
   obtain ⟨g, x₁, y₁, z₁, hg, hgx, hgy, hgz, hg'⟩ := Int.exists_gcd_gcd_eq_one x y z
-  refine' ⟨x₁, y₁, z₁, _, hg'⟩
+  refine ⟨x₁, y₁, z₁, ?_, hg'⟩
   rw [hgx, hgy, hgz] at h
   have hg₀ : 0 < g := by
     rwa [hg, Nat.cast_pos, Int.gcd_pos_iff, Nat.cast_ne_zero, ← zero_lt_iff, Int.gcd_pos_iff]
@@ -217,7 +217,7 @@ theorem IsSoluble.primitive'_help₁ {a b c x y z : ℤ} (h : CoeffAss a b c)
 theorem IsSoluble.primitive'_help {a b c x y z : ℤ} (h : CoeffAss a b c)
     (hs : a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0) (hg : x.gcd (y.gcd z) = 1) :
     IsCoprime (a * x) (b * y) := by
-  refine' IsCoprime.mul_left _ _ <;> refine' IsCoprime.mul_right _ _
+  refine IsCoprime.mul_left ?_ ?_ <;> refine IsCoprime.mul_right ?_ ?_
   · exact h.1
   · exact IsSoluble.primitive'_help₁ h hs hg
   · replace hs : b * y ^ 2 + a * x ^ 2 + c * z ^ 2 = 0 := by rw [← hs]; ring
@@ -232,7 +232,7 @@ theorem IsSoluble.primitive' {a b c : ℤ} (h : IsSoluble a b c) (h' : CoeffAss 
       a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧
         IsCoprime (a * x) (b * y) ∧ IsCoprime (b * y) (c * z) ∧ IsCoprime (c * z) (a * x) := by
   obtain ⟨x, y, z, hs, hg⟩ := h.primitive
-  refine' ⟨x, y, z, hs, IsSoluble.primitive'_help h' hs hg, _, _⟩
+  refine ⟨x, y, z, hs, IsSoluble.primitive'_help h' hs hg, ?_, ?_⟩
   · have hs' : b * y ^ 2 + c * z ^ 2 + a * x ^ 2 = 0 := by rw [← hs]; ring
     have hg' : y.gcd (z.gcd x) = 1 := by rwa [Int.gcd_comm, Int.gcd_assoc] at hg
     exact IsSoluble.primitive'_help h'.rotate hs' hg'
@@ -310,8 +310,8 @@ theorem necessary₂ {a b c : ℤ} (h : IsSoluble a b c) (h' : CoeffAss a b c) :
 /-- The conditions in Legendre's Theorem are necessary. -/
 theorem necessary {a b c : ℤ} (h : IsSoluble a b c) (h' : CoeffAss a b c) :
     Condition₁ a b c ∧ Condition₂ a b c := by
-  refine'
-    ⟨⟨necessary₁ h, _⟩,
+  refine
+    ⟨⟨necessary₁ h, ?_⟩,
       ⟨necessary₂ h h', necessary₂ h.swap₁₂ h'.swap₁₂, necessary₂ h.rotate.rotate h'.rotate.rotate⟩⟩
   have := necessary₁ h.neg
   simpa [neg_pos] using this
@@ -346,7 +346,7 @@ theorem descent {a b : ℤ} (hb : 0 < b) (hba : b < a) (h : IsSquareMod b a) :
     exact ⟨1, c, 0, by linear_combination -h₁, squarefree_one, zero_lt_one, hb.trans_lt hba⟩
   obtain ⟨A, m, ht, hA⟩ := Int.sq_mul_squarefree (-t)
   have hA₀ : 0 < A := pos_of_mul_pos_right (by rwa [ht, neg_pos]) (sq_nonneg m)
-  refine' ⟨A, c, m, by linear_combination -h₁ - a * ht, hA, hA₀, _⟩
+  refine ⟨A, c, m, by linear_combination -h₁ - a * ht, hA, hA₀, ?_⟩
   replace h₃ : 2 * c ≤ a :=
     ((mul_le_mul_left zero_lt_two).mpr h₃).trans (Int.mul_ediv_le zero_lt_two a)
   have H : a * (4 * m ^ 2 * A) < a * a := by
@@ -386,7 +386,7 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
   rw [Int.gcd_mul_left, Int.gcd_eq_one_iff_coprime.mpr hg₁, mul_one, Int.natAbs_sq, ←
     IsSquareMod.iff_natAbs, (by ring : -(g * a₁) * (g * b₁) = -a₁ * b₁ * g ^ 2),
     Int.mul_ediv_cancel _ (pow_ne_zero 2 hg₀)] at h₃
-  refine' IsSquareMod.mul_of_coprime _ _ hbg
+  refine IsSquareMod.mul_of_coprime ?_ ?_ hbg
   · have H := IsCoprime.mul_add_right_right hbg.neg_right (c₁ ^ 2)
     rw [← sub_eq_add_neg, h', sq, ← mul_assoc, mul_comm a₁, mul_assoc, mul_assoc] at H
     apply_fun (· * ·) a₁ at h'
@@ -404,7 +404,7 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
       obtain ⟨c₂, rfl⟩ := Int.Prime.dvd_pow' hp (hbg.symm.of_mul_left_left.dvd_of_dvd_mul_right H)
       obtain ⟨b₃, rfl⟩ : ↑p ∣ b₂ :=
         by
-        refine' ⟨c₂ ^ 2 * g - a₁ * m' ^ 2 * A, _⟩
+        refine ⟨c₂ ^ 2 * g - a₁ * m' ^ 2 * A, ?_⟩
         have : Function.Injective ((· * ·) (p : ℤ)) :=
           mul_right_injective₀ (Nat.cast_ne_zero.mpr hp.ne_zero)
         apply_fun (· * ·) (p : ℤ) using this
@@ -472,7 +472,7 @@ theorem isSoluble_neg_one_of_lt {a b : ℤ} (sa : Squarefree a) (sb : Squarefree
   have b2 : IsSquareMod (b : ℤ) A := ⟨c, -a * m ^ 2, by linear_combination -h'⟩
   have b3 := condition_iii sb h₁ h'
   lift A to ℕ using hA.le
-  refine' isSoluble_transfer hm sf.ne_zero sa.ne_zero _ h'
+  refine isSoluble_transfer hm sf.ne_zero sa.ne_zero ?_ h'
   rcases lt_trichotomy A b with (hAb | rfl | hAb)
   · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at b3
     exact (ih b (Nat.cast_lt.mp hba) _ sf hA sb (Nat.cast_lt.mpr hAb) b2 b1 b3).swap₁₂
@@ -505,11 +505,11 @@ theorem sufficient' {a b c : ℤ} (ha₁ : 0 < a) (hb₁ : 0 < b) (hc₁ : 0 < c
   rw [neg_mul_neg] at ha₂ hb₂
   rw [IsSquareMod.iff_neg, neg_mul] at hc₂
   rw [(by ring : -c = -1 * c), ← IsSoluble.mul_iff_mul_mul hc₁.ne']
-  refine'
+  refine
     isSoluble_neg_one (mul_pos ha₁ hc₁) (mul_pos hb₁ hc₁)
       ((Int.squarefree_mul hca.symm).mpr ⟨ha, hc⟩) ((Int.squarefree_mul hbc).mpr ⟨hb, hc⟩)
       (hb₂.mul_of_coprime (isSquareMod_mul_self a c) hbc)
-      (ha₂.mul_of_coprime (isSquareMod_mul_self b c) hca.symm) _
+      (ha₂.mul_of_coprime (isSquareMod_mul_self b c) hca.symm) ?_
   have hg : ((a * c).gcd (b * c) : ℤ) = c := by
     rw [Int.gcd_mul_right, Int.gcd_eq_one_iff_coprime.mpr hab, one_mul, Int.natAbs_of_nonneg hc₁.le]
   rwa [hg, neg_mul, (by ring : a * c * (b * c) = a * b * c ^ 2), ← neg_mul,
@@ -535,21 +535,21 @@ theorem sufficient {a b c : ℤ} (h₁ : Condition₁ a b c) (h₂ : Condition�
   · rw [← neg_neg a, ← neg_neg b] at H ⊢
     rw [← neg_neg c]
     simp_rw [neg_lt_zero] at H
-    refine' IsSoluble.neg (sufficient' H.1 H.2.1 H.2.2 h₂.neg _)
+    refine IsSoluble.neg (sufficient' H.1 H.2.1 H.2.2 h₂.neg ?_)
     rw [← neg_neg c]
     exact h'.neg_all.neg_last
   · rw [← neg_neg a, ← neg_neg c] at H ⊢
     rw [← neg_neg b]
     simp_rw [neg_lt_zero] at H
-    refine' IsSoluble.neg (IsSoluble.rotate <| sufficient' H.2.2 H.1 H.2.1 h₂.rotate.rotate.neg _)
+    refine IsSoluble.neg (IsSoluble.rotate <| sufficient' H.2.2 H.1 H.2.1 h₂.rotate.rotate.neg ?_)
     rw [← neg_neg b]
     exact h'.rotate.rotate.neg_all.neg_last
   · rw [← neg_neg b, ← neg_neg c] at H ⊢
     rw [← neg_neg a]
     simp_rw [neg_lt_zero] at H
-    refine'
+    refine
       IsSoluble.neg
-        (IsSoluble.rotate <| IsSoluble.rotate <| sufficient' H.2.1 H.2.2 H.1 h₂.rotate.neg _)
+        (IsSoluble.rotate <| IsSoluble.rotate <| sufficient' H.2.1 H.2.2 H.1 h₂.rotate.neg ?_)
     rw [← neg_neg a]
     exact h'.rotate.neg_all.neg_last
 

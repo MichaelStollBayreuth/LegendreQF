@@ -30,7 +30,7 @@ theorem exists_gcd_eq_one (a b : ℤ) :
   · rw [not_and_or, ← Ne, ← Ne] at h
     have hg := gcd_pos_iff.mpr h
     have hg' : (gcd a b : ℤ) ≠ 0 := natCast_ne_zero_iff_pos.mpr hg
-    refine' ⟨a.gcd b, a / a.gcd b, b / a.gcd b, rfl, _, _, _⟩
+    refine ⟨a.gcd b, a / a.gcd b, b / a.gcd b, rfl, ?_, ?_, ?_⟩
     · rw [← Int.mul_ediv_assoc _ gcd_dvd_left]
       exact (Int.mul_ediv_cancel_left _ hg').symm
     · rw [← Int.mul_ediv_assoc _ gcd_dvd_right]
@@ -86,7 +86,7 @@ theorem not_isCoprime_of_mul_prime {p : ℕ} (hp : p.Prime) (a b : ℤ) :
 
 -- Mathlib.Algebra.Squarefree
 theorem squarefree_iff_squarefree_natAbs {n : ℤ} : Squarefree n ↔ Squarefree n.natAbs := by
-  refine' ⟨fun h x hx => _, fun h x hx => _⟩
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · have : (x * x : ℤ) ∣ n.natAbs := by exact_mod_cast hx
     exact ofNat_isUnit.mp (h (↑x) (dvd_natAbs.mp this))
   · rw [← natAbs_dvd_natAbs, natAbs_mul] at hx

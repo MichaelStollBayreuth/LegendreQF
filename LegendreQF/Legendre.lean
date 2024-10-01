@@ -253,12 +253,11 @@ theorem condition₁_iff {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠
             a < 0 ∧ b < 0 ∧ 0 < c ∨ a < 0 ∧ 0 < b ∧ c < 0 ∨ 0 < a ∧ b < 0 ∧ c < 0 := by
   dsimp only [Condition₁]
   cases' ha.lt_or_lt with ha₁ ha₁ <;>
-        simp only [asymm ha₁, ha₁, false_and_iff, not_false_iff, true_and_iff, not_and, not_lt,
-          false_and_iff, not_false_iff, or_false_iff, false_or_iff, and_true_iff] <;>
-      cases' hb.lt_or_lt with hb₁ hb₁ <;>
-    simp only [asymm hb₁, hb₁, IsEmpty.forall_iff, forall_true_left, false_and_iff, true_and_iff,
-      or_false_iff, false_or_iff, lt_or_lt_iff_ne, Ne, true_iff_iff, le_iff_eq_or_lt, hc.symm,
-      hc, not_false_iff, or_iff_right_iff_imp]
+    simp only [asymm ha₁, false_and, not_false_eq_true, ha₁, true_and, not_and, not_lt, or_false,
+      false_or, not_and, and_true] <;>
+    cases' hb.lt_or_lt with hb₁ hb₁ <;>
+    simp only [asymm hb₁, le_iff_eq_or_lt, hc, false_or, false_implies, false_and, hb₁, true_and,
+      lt_or_lt_iff_ne, ne_eq, hc.symm, not_false_eq_true, or_true, hc.symm, true_implies, or_false]
 
 /-- This is the second solubility condition in Legendre's theorem: the negative product
 of each pair of coefficients is a square modulo the third. -/

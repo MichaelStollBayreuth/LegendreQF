@@ -24,35 +24,37 @@ This is based on code written in the context of the Bachelor's thesis of Anne Za
 namespace Legendre
 
 /-!
-### Solubility predicate, assumptions on the coefficients and Legendre's conditions
+### Solubility predicate
 -/
 
+section General
 
--- TODO: This can be done in principle for any ring in place of `ℤ`.
-/-- We say that a triple of integers `a`, `b`, `c` is *soluble* if the equation
-`a*x^2 + b*y^2 + c*z^2 = 0` has a nontrivial solution in integers. -/
-def IsSoluble (a b c : ℤ) : Prop :=
+variable {R : Type*} [CommRing R]
+
+/-- We say that a triple of ring elements `a`, `b`, `c` is *soluble* if the equation
+`a * x^2 + b * y^2 + c * z^2 = 0` has a nontrivial solution in the ring. -/
+def IsSoluble (a b c : R) : Prop :=
   ∃ x y z, a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧ (x ≠ 0 ∨ y ≠ 0 ∨ z ≠ 0)
 
 namespace IsSoluble
 
 /-- Solubility is preserved when the first two coefficients are swapped. -/
-theorem swap₁₂ {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble b a c := by
+theorem swap₁₂ {a b c : R} (h : IsSoluble a b c) : IsSoluble b a c := by
   obtain ⟨x, y, z, h, hnt⟩ := h
   exact ⟨y, x, z, by rw [← h]; ring, by tauto⟩
 
 /-- Solubility is preserved when the first and the last coefficient are swapped. -/
-theorem swap₁₃ {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble c b a := by
+theorem swap₁₃ {a b c : R} (h : IsSoluble a b c) : IsSoluble c b a := by
   obtain ⟨x, y, z, h, hnt⟩ := h
   exact ⟨z, y, x, by rw [← h]; ring, by tauto⟩
 
 /-- Solubility is preserved when the coefficients are rotated. -/
-theorem rotate {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble b c a := by
+theorem rotate {a b c : R} (h : IsSoluble a b c) : IsSoluble b c a := by
   obtain ⟨x, y, z, h, hnt⟩ := h
   exact ⟨y, z, x, by rw [← h]; ring, by tauto⟩
 
-/-- Solubility is preserved when the coefficients are multiplied by the same nonzero integer. -/
-theorem iff_scale {a b c d : ℤ} (hd : d ≠ 0) :
+/-- Solubility is preserved when the coefficients are multiplied by the same nonzero element. -/
+theorem iff_scale [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
     IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) := by
   refine ⟨fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩, fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩⟩
   · apply_fun (d * ·) at h
@@ -60,24 +62,41 @@ theorem iff_scale {a b c d : ℤ} (hd : d ≠ 0) :
   · apply_fun (d * ·) using mul_right_injective₀ hd
     simpa only [mul_add, mul_assoc, mul_zero] using h
 
+/-- Solubility is preserved when the coefficients are multiplied by a unit. -/
+theorem iff_scale' {a b c d : R} (hd : IsUnit d) :
+    IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) := by
+  refine ⟨fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩, fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩⟩
+  · apply_fun (d * ·) at h
+    simpa only [mul_add, mul_assoc, mul_zero] using h
+  · apply_fun (d * ·) using hd.mul_right_injective
+    simpa only [mul_add, mul_assoc, mul_zero] using h
+
 /-- Solubility is preserved when the coefficients are negated. -/
-theorem neg {a b c : ℤ} (h : IsSoluble a b c) : IsSoluble (-a) (-b) (-c) := by
+theorem neg {a b c : R} (h : IsSoluble a b c) : IsSoluble (-a) (-b) (-c) := by
   rw [← neg_one_mul a, ← neg_one_mul b, ← neg_one_mul c]
-  have : -1 ≠ 0 := by rw [Int.neg_ne_zero]; exact one_ne_zero
-  exact (iff_scale this).mp h
+  exact (iff_scale' isUnit_neg_one).mp h
 
-theorem mul_mul_iff_mul {a b c d : ℤ} (hd : d ≠ 0) :
+theorem mul_mul_iff_mul [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
     IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) := by
-  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_, ?_⟩,
-    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, ?_, ?_⟩⟩
-  · rw [← mul_eq_zero_of_right d h]
-    ring
-  · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀
-  · rw [← mul_eq_zero_of_right d h]
-    ring
-  · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀
+  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_⟩,
+    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, ?_⟩⟩ <;>
+    ( constructor
+      · rw [← mul_eq_zero_of_right d h]
+        ring
+      · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀ )
 
-theorem iff_mul_sq {a b c d : ℤ} (hd : d ≠ 0) :
+theorem mul_mul_iff_mul' {a b c d : R} (hd : IsUnit d) :
+    IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) := by
+  have H (x : R) : d * x ≠ 0 ↔ x ≠ 0 :=
+    ⟨right_ne_zero_of_mul, fun h hf ↦ h <| hd.mul_right_eq_zero.mp hf⟩
+  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_⟩,
+    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, ?_⟩⟩ <;>
+      ( constructor
+        · rw [← mul_eq_zero_of_right d h]
+          ring
+        · simpa only [H, ne_eq] using h₀ )
+
+theorem iff_mul_sq [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
     IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c := by
   refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, by rw [← h]; ring, ?_⟩,
     fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_, ?_⟩⟩
@@ -86,7 +105,24 @@ theorem iff_mul_sq {a b c d : ℤ} (hd : d ≠ 0) :
     ring
   · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀
 
-/-- If a triple is soluble, then there is a solution in coprime integers. -/
+theorem iff_mul_sq' {a b c d : R} (hd : IsUnit d) :
+    IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c := by
+  have H (x : R) : d * x ≠ 0 ↔ x ≠ 0 :=
+    ⟨right_ne_zero_of_mul, fun h hf ↦ h <| hd.mul_right_eq_zero.mp hf⟩
+  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, by rw [← h]; ring, ?_⟩,
+    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_, ?_⟩⟩
+  · simpa only [ne_eq, H] using h₀
+  · rw [← mul_eq_zero_of_right (d ^ 2) h]
+    ring
+  · simpa only [H, ne_eq] using h₀
+
+end IsSoluble
+
+end General
+
+namespace IsSoluble
+
+/-- If an integral triple is soluble, then there is a solution in coprime integers. -/
 theorem primitive {a b c : ℤ} (h : IsSoluble a b c) :
     ∃ x y z, a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧ x.gcd (y.gcd z) = 1 := by
   obtain ⟨x, y, z, h, hnt⟩ := h
@@ -97,6 +133,11 @@ theorem primitive {a b c : ℤ} (h : IsSoluble a b c) :
   refine ⟨x₁, y₁, z₁, eq_zero_of_ne_zero_of_mul_left_eq_zero (pow_ne_zero 2 hg₀) ?_, hg'⟩
   rw [← h]
   ring
+
+
+/-!
+### Assumptions on the coefficients and Legendre's conditions
+-/
 
 /-- This is the assumption on the coefficients in Legendre's Theorem:
 they are coprime in pairs and squarefree. -/

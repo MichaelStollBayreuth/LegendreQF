@@ -109,6 +109,13 @@ theorem isCoprime_of_squarefree_mul {a b : ℤ} (h : Squarefree (a * b)) : IsCop
   have hd : ↑(p * p) ∣ p * a' * (p * b') := ⟨a' * b', by push_cast; ring⟩
   exact hp.not_unit (ofNat_isUnit.mp <| h p hd)
 
+/-- A product of two integers is squarefree if and only if they are coprime and both squarefree. -/
+lemma squarefree_mul_iff {a b : ℤ} :
+    Squarefree (a * b) ↔ IsCoprime a b ∧ Squarefree a ∧ Squarefree b := by
+  refine ⟨fun H ↦ ?_, fun ⟨hab, ha, hb⟩ ↦ (squarefree_mul hab).mpr ⟨ha, hb⟩⟩
+  have := isCoprime_of_squarefree_mul H
+  exact ⟨this, (squarefree_mul this).mp H⟩
+
 -- The `Nat` version of this exists: `Nat.sq_mul_squarefree`.
 /-- Any integer can be written as the product of a square and a squarefree integer. -/
 theorem sq_mul_squarefree (n : ℤ) : ∃ a b : ℤ, b ^ 2 * a = n ∧ Squarefree a := by

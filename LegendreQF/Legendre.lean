@@ -53,68 +53,71 @@ theorem rotate {a b c : R} (h : IsSoluble a b c) : IsSoluble b c a := by
   obtain ⟨x, y, z, h, hnt⟩ := h
   exact ⟨y, z, x, by rw [← h]; ring, by tauto⟩
 
-/-- Solubility is preserved when the coefficients are multiplied by the same nonzero element. -/
-theorem iff_scale [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
+lemma _root_.nonZeroDivisors_mul_left_injective {x : R} (hx : x ∈ nonZeroDivisors R) :
+    Function.Injective fun r : R ↦ x * r := by
+  intro a b h
+  dsimp only at h
+  rw [← sub_eq_zero] at h ⊢
+  rw [← mul_sub] at h
+  exact (mul_left_mem_nonZeroDivisors_eq_zero_iff hx).mp h
+
+/-- Solubility is preserved when the coefficients are multiplied by a non-zero-divisor. -/
+theorem iff_scale₀ {a b c d : R} (hd : d ∈ nonZeroDivisors R) :
     IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) := by
   refine ⟨fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩, fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩⟩
   · apply_fun (d * ·) at h
     simpa only [mul_add, mul_assoc, mul_zero] using h
-  · apply_fun (d * ·) using mul_right_injective₀ hd
+  · apply_fun (d * ·) using nonZeroDivisors_mul_left_injective hd
     simpa only [mul_add, mul_assoc, mul_zero] using h
 
+/-- Solubility is preserved when the coefficients are multiplied by the same nonzero element. -/
+theorem iff_scale [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
+    IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) :=
+  iff_scale₀ <| mem_nonZeroDivisors_of_ne_zero hd
+
 /-- Solubility is preserved when the coefficients are multiplied by a unit. -/
-theorem iff_scale' {a b c d : R} (hd : IsUnit d) :
-    IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) := by
-  refine ⟨fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩, fun ⟨x, y, z, h, hnt⟩ ↦ ⟨x, y, z, ?_, hnt⟩⟩
-  · apply_fun (d * ·) at h
-    simpa only [mul_add, mul_assoc, mul_zero] using h
-  · apply_fun (d * ·) using hd.mul_right_injective
-    simpa only [mul_add, mul_assoc, mul_zero] using h
+theorem iff_scale_of_isUnit {a b c d : R} (hd : IsUnit d) :
+    IsSoluble a b c ↔ IsSoluble (d * a) (d * b) (d * c) :=
+  iff_scale₀ hd.mem_nonZeroDivisors
 
 /-- Solubility is preserved when the coefficients are negated. -/
 theorem neg {a b c : R} (h : IsSoluble a b c) : IsSoluble (-a) (-b) (-c) := by
   rw [← neg_one_mul a, ← neg_one_mul b, ← neg_one_mul c]
-  exact (iff_scale' isUnit_neg_one).mp h
+  exact (iff_scale_of_isUnit isUnit_neg_one).mp h
 
-theorem mul_mul_iff_mul [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
+theorem mul_mul_iff_mul₀ {a b c d : R} (hd : d ∈ nonZeroDivisors R) :
     IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) := by
   refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_⟩,
     fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, ?_⟩⟩ <;>
     ( constructor
       · rw [← mul_eq_zero_of_right d h]
         ring
-      · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀ )
+      · simpa only [ne_eq, mul_left_mem_nonZeroDivisors_eq_zero_iff hd] using h₀ )
 
-theorem mul_mul_iff_mul' {a b c d : R} (hd : IsUnit d) :
-    IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) := by
-  have H (x : R) : d * x ≠ 0 ↔ x ≠ 0 :=
-    ⟨right_ne_zero_of_mul, fun h hf ↦ h <| hd.mul_right_eq_zero.mp hf⟩
-  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_⟩,
-    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, ?_⟩⟩ <;>
-      ( constructor
-        · rw [← mul_eq_zero_of_right d h]
-          ring
-        · simpa only [H, ne_eq] using h₀ )
+theorem mul_mul_iff_mul [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
+    IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) :=
+  mul_mul_iff_mul₀ <| mem_nonZeroDivisors_of_ne_zero hd
+
+theorem mul_mul_iff_mul_of_isUnit {a b c d : R} (hd : IsUnit d) :
+    IsSoluble (a * d) (b * d) c ↔ IsSoluble a b (c * d) :=
+  mul_mul_iff_mul₀ hd.mem_nonZeroDivisors
+
+theorem iff_mul_sq₀ {a b c d : R} (hd : d ∈ nonZeroDivisors R) :
+    IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c := by
+  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, by rw [← h]; ring, ?_⟩,
+    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_, ?_⟩⟩
+  swap
+  · rw [← mul_eq_zero_of_right (d ^ 2) h]
+    ring
+  all_goals simpa only [ne_eq, mul_left_mem_nonZeroDivisors_eq_zero_iff hd] using h₀
 
 theorem iff_mul_sq [IsDomain R] {a b c d : R} (hd : d ≠ 0) :
-    IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c := by
-  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, by rw [← h]; ring, ?_⟩,
-    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_, ?_⟩⟩
-  · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀
-  · rw [← mul_eq_zero_of_right (d ^ 2) h]
-    ring
-  · simpa only [ne_eq, mul_eq_zero, hd, false_or] using h₀
+    IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c :=
+  iff_mul_sq₀ <| mem_nonZeroDivisors_of_ne_zero hd
 
-theorem iff_mul_sq' {a b c d : R} (hd : IsUnit d) :
-    IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c := by
-  have H (x : R) : d * x ≠ 0 ↔ x ≠ 0 :=
-    ⟨right_ne_zero_of_mul, fun h hf ↦ h <| hd.mul_right_eq_zero.mp hf⟩
-  refine ⟨fun ⟨x, y, z, h, h₀⟩ ↦ ⟨x, y, d * z, by rw [← h]; ring, ?_⟩,
-    fun ⟨x, y, z, h, h₀⟩ ↦ ⟨d * x, d * y, z, ?_, ?_⟩⟩
-  · simpa only [ne_eq, H] using h₀
-  · rw [← mul_eq_zero_of_right (d ^ 2) h]
-    ring
-  · simpa only [H, ne_eq] using h₀
+theorem iff_mul_sq_of_isUnit {a b c d : R} (hd : IsUnit d) :
+    IsSoluble a b (c * d ^ 2) ↔ IsSoluble a b c :=
+  iff_mul_sq₀ hd.mem_nonZeroDivisors
 
 end IsSoluble
 
@@ -143,6 +146,10 @@ theorem primitive {a b c : ℤ} (h : IsSoluble a b c) :
 they are coprime in pairs and squarefree. -/
 def CoeffAss (a b c : ℤ) : Prop :=
   IsCoprime a b ∧ IsCoprime b c ∧ IsCoprime c a ∧ Squarefree a ∧ Squarefree b ∧ Squarefree c
+
+lemma coeffAss_iff {a b c : ℤ} : CoeffAss a b c ↔ Squarefree (a * b * c) := by
+  simp_rw [Int.squarefree_mul_iff, IsCoprime.mul_left_iff, CoeffAss]
+  tauto
 
 namespace CoeffAss
 
@@ -231,9 +238,8 @@ open CoeffAss in
 /-- If a coefficient triple `(a,b,c)` is soluble and satisfies `CoeffAss`, then there is
 a solution `(x,y,z)` such that `a*x`, `b*y` and `c*z` are coprime in pairs. -/
 theorem primitive' {a b c : ℤ} (h : IsSoluble a b c) (h' : CoeffAss a b c) :
-    ∃ x y z,
-      a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧
-        IsCoprime (a * x) (b * y) ∧ IsCoprime (b * y) (c * z) ∧ IsCoprime (c * z) (a * x) := by
+    ∃ x y z, a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0 ∧
+      IsCoprime (a * x) (b * y) ∧ IsCoprime (b * y) (c * z) ∧ IsCoprime (c * z) (a * x) := by
   obtain ⟨x, y, z, hs, hg⟩ := h.primitive
   refine ⟨x, y, z, hs, primitive'_help h' hs hg, ?_, ?_⟩
   · rw [add_rotate] at hs

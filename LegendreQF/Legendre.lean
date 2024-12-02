@@ -1,3 +1,4 @@
+import LegendreQF.Auxiliary
 import LegendreQF.IsSquareMod
 
 /-!
@@ -232,7 +233,7 @@ theorem Condition₂.rotate {a b c : ℤ} (h : Condition₂ a b c) : Condition�
 theorem Condition₂.neg {a b c : ℤ} (h : Condition₂ a b c) : Condition₂ (-a) (-b) (-c) := by
   have H : ∀ x y : ℤ, - -x * -y = -x * y := fun x y ↦ by ring
   obtain ⟨ha, hb, hc⟩ := h
-  rw [← IsSquareMod.iff_neg, ← H] at ha hb hc
+  rw [← IsSquareMod.neg_iff, ← H] at ha hb hc
   exact ⟨ha, hb, hc⟩
 
 /-!
@@ -284,7 +285,7 @@ We then show that this implies the sufficiency direction in Legendre's Theorem.
 /-- A special case: The equation `b*x^2 + b*y^2 = z^2` has a nontrivial solution
 if `b` is positive and `-1` is a square modulo `b`. -/
 theorem of_equal {b : ℤ} (hb : 0 < b) (h : IsSquareMod (-1) b) : IsSoluble b b (-1) := by
-  obtain ⟨r, s, hrs⟩ := h.sum_of_squares_of_isSquareMod_neg_one hb.le
+  obtain ⟨r, s, hrs⟩ := h.sum_of_squares hb.le
   exact ⟨r, s, r ^ 2 + s ^ 2, by rw [hrs]; ring, .inr <| .inr <| hrs ▸ hb.ne'⟩
 
 /-- This lemma is used to reduce the statement for `a` and `b` to the statement for `A` and `b`
@@ -446,7 +447,7 @@ theorem sufficient' {a b c : ℤ} (ha₁ : 0 < a) (hb₁ : 0 < b) (hc₁ : 0 < c
   obtain ⟨ha₂, hb₂, hc₂⟩ := h₂
   obtain ⟨hab, hbc, hca, ha, hb, hc⟩ := h'
   rw [neg_mul_neg] at ha₂ hb₂
-  rw [IsSquareMod.iff_neg, neg_mul] at hc₂
+  rw [IsSquareMod.neg_iff, neg_mul] at hc₂
   rw [show -c = -1 * c by simp only [neg_mul, one_mul], ← IsSoluble.mul_mul_iff_mul hc₁.ne']
   refine neg_one (mul_pos ha₁ hc₁) (mul_pos hb₁ hc₁)
     ((Int.squarefree_mul hca.symm).mpr ⟨ha, hc⟩) ((Int.squarefree_mul hbc).mpr ⟨hb, hc⟩)

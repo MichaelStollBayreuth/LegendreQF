@@ -178,7 +178,7 @@ theorem neg_all {a b c : ℤ} (h : CoeffAss a b c) : CoeffAss (-a) (-b) (-c) := 
 
 private lemma primitive'_help₂ {a b c x y z : ℤ} (h : CoeffAss a b c)
     (hs : a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0) (hg : x.gcd (y.gcd z) = 1) : IsCoprime x y := by
-  rw [← Int.gcd_eq_one_iff_coprime, Nat.eq_one_iff_not_exists_prime_dvd]
+  rw [Int.isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp hf
   replace hf := Int.natCast_dvd_natCast.mpr hf
   obtain ⟨x₁, rfl⟩ : ↑p ∣ x := hf.trans Int.gcd_dvd_left
@@ -204,7 +204,7 @@ private lemma primitive'_help₂ {a b c x y z : ℤ} (h : CoeffAss a b c)
 
 private lemma primitive'_help₁ {a b c x y z : ℤ} (h : CoeffAss a b c)
     (hs : a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0) (hg : x.gcd (y.gcd z) = 1) : IsCoprime a y := by
-  rw [← Int.gcd_eq_one_iff_coprime, Nat.eq_one_iff_not_exists_prime_dvd]
+  rw [Int.isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp hf
   replace hf := Int.natCast_dvd_natCast.mpr hf
   have hyz : IsCoprime y z := by
@@ -382,7 +382,7 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
     obtain ⟨c₁, rfl⟩ := Int.Prime.dvd_pow' hp (hbg.of_mul_right_left.symm.dvd_of_dvd_mul_right H)
     simp only [Int.gcd_mul_left, Nat.cast_mul, Int.natAbs_ofNat] at h
     exact hp.not_dvd_one <| dvd_of_mul_right_eq _ h
-  rw [Int.gcd_mul_left, Int.gcd_eq_one_iff_coprime.mpr hg₁, mul_one, Int.natAbs_sq,
+  rw [Int.gcd_mul_left, Int.isCoprime_iff_gcd_eq_one.mp hg₁, mul_one, Int.natAbs_sq,
     ← IsSquareMod.iff_natAbs, (by ring : -(g * a₁) * (g * b₁) = -a₁ * b₁ * g ^ 2),
     Int.mul_ediv_cancel _ (pow_ne_zero 2 hg₀)] at h₃
   refine IsSquareMod.mul_of_coprime ?_ ?_ hbg
@@ -424,7 +424,7 @@ theorem condition_iii {A a b c m : ℤ} (sb : Squarefree b) (h₁ : IsSquareMod 
     obtain ⟨c₂, rfl⟩ := Int.Prime.dvd_pow' hp (hbg.of_mul_right_left.symm.dvd_of_dvd_mul_right H)
     simp only [Int.gcd_mul_left, Nat.cast_mul, Int.natAbs_ofNat] at h
     exact hp.not_dvd_one <| dvd_of_mul_right_eq _ h
-  rw [Int.gcd_mul_left, Int.gcd_eq_one_iff_coprime.mpr hg₁, mul_one, Int.natAbs_sq,
+  rw [Int.gcd_mul_left, Int.isCoprime_iff_gcd_eq_one.mp hg₁, mul_one, Int.natAbs_sq,
     ← IsSquareMod.iff_natAbs, show -(g * A₁) * (g * b₁) = -A₁ * b₁ * g ^ 2 by ring,
     Int.mul_ediv_cancel _ (pow_ne_zero 2 hg₀)]
   obtain ⟨u, v, huv⟩ := h₁.of_mul_left
@@ -501,7 +501,7 @@ theorem sufficient' {a b c : ℤ} (ha₁ : 0 < a) (hb₁ : 0 < b) (hc₁ : 0 < c
     (hb₂.mul_of_coprime (isSquareMod_mul_self a c) hbc)
     (ha₂.mul_of_coprime (isSquareMod_mul_self b c) hca.symm) ?_
   have hg : ((a * c).gcd (b * c) : ℤ) = c := by
-    rw [Int.gcd_mul_right, Int.gcd_eq_one_iff_coprime.mpr hab, one_mul, Int.natAbs_of_nonneg hc₁.le]
+    rw [Int.gcd_mul_right, Int.isCoprime_iff_gcd_eq_one.mp hab, one_mul, Int.natAbs_of_nonneg hc₁.le]
   rwa [hg, neg_mul, show a * c * (b * c) = a * b * c ^ 2 by ring, ← neg_mul,
     Int.mul_ediv_cancel _ (pow_ne_zero 2 hc₁.ne')]
 

@@ -69,7 +69,7 @@ theorem dvd_gcd_iff {k : ℕ} {m n : ℤ} : k ∣ m.gcd n ↔ ↑k ∣ m ∧ ↑
 /-- Two integers are not coprime if and only if there is a prime number that divides both. -/
 theorem not_isCoprime_iff_exists_prime_dvd {a b : ℤ} :
     ¬IsCoprime a b ↔ ∃ p : ℕ, p.Prime ∧ ↑p ∣ a ∧ ↑p ∣ b := by
-  rw [← gcd_eq_one_iff_coprime, Nat.eq_one_iff_not_exists_prime_dvd]
+  rw [isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
   push_neg
   simp_rw [dvd_gcd_iff]
 

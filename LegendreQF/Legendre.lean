@@ -1,5 +1,6 @@
 import LegendreQF.Auxiliary
 import LegendreQF.IsSquareMod
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Legendre's Theorem on ternary quadratic forms

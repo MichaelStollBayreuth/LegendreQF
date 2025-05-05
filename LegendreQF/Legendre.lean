@@ -404,7 +404,7 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
         refine ⟨c₂ ^ 2 * g - a₁ * m' ^ 2 * A, ?_⟩
         apply_fun ((p : ℤ) * ·) using mul_right_injective₀ (Nat.cast_ne_zero.mpr hp.ne_zero)
         linear_combination -h'
-      exact hp.not_unit (Int.ofNat_isUnit.mp <| sb p ⟨b₃ * g, by ring⟩)
+      exact hp.not_isUnit (Int.ofNat_isUnit.mp <| sb p ⟨b₃ * g, by ring⟩)
     exact (hsm.of_mul h₁.of_mul_right ha).of_mul_sq_of_coprime_right hm
 
 /-- This shows that the third condition, `IsSquareMod (-a*b/(a.gcd b)^2) (a.gcd b)`
@@ -483,7 +483,7 @@ theorem neg_one {a b : ℤ} (ha₀ : 0 < a) (hb₀ : 0 < b) (ha : Squarefree a)
   · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at hd
     exact (neg_one_of_lt hb ha ha₀ hab' hba hab hd).swap₁₂
   · rw [neg_mul, Int.gcd_self, ← sq, Int.natAbs_sq, Int.neg_ediv_of_dvd ⟨1, (mul_one _).symm⟩,
-      Int.ediv_self (sq_pos_of_ne_zero hb₀.ne').ne', ← Int.eq_natAbs_of_zero_le ha₀.le] at hd
+      Int.ediv_self (sq_pos_of_ne_zero hb₀.ne').ne', ← Int.eq_natAbs_of_nonneg ha₀.le] at hd
     exact of_equal ha₀ hd
   · exact neg_one_of_lt ha hb hb₀ hab' hab hba hd
 

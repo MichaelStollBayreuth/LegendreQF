@@ -107,7 +107,7 @@ theorem isCoprime_of_squarefree_mul {a b : ℤ} (h : Squarefree (a * b)) : IsCop
   by_contra hf
   obtain ⟨p, hp, ⟨a', rfl⟩, ⟨b', rfl⟩⟩ := not_isCoprime_iff_exists_prime_dvd.mp hf
   have hd : ↑(p * p) ∣ p * a' * (p * b') := ⟨a' * b', by push_cast; ring⟩
-  exact hp.not_unit (ofNat_isUnit.mp <| h p hd)
+  exact hp.not_isUnit (ofNat_isUnit.mp <| h p hd)
 
 /-- A product of two integers is squarefree if and only if they are coprime and both squarefree. -/
 lemma squarefree_mul_iff {a b : ℤ} :

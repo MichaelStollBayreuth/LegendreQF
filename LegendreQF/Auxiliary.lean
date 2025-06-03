@@ -1,6 +1,5 @@
-import Mathlib.Tactic
-import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Nat.Squarefree
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 ### Useful lemmas
@@ -11,6 +10,24 @@ theorem Squarefree.neg {R} [Monoid R] [HasDistribNeg R] {r : R} (h : Squarefree 
     Squarefree (-r) := fun x hx ↦ h x (dvd_neg.mp hx)
 
 namespace Int
+
+lemma not_isCoprime_iff_exists_prime_dvd {m n : ℤ} :
+    ¬ IsCoprime m n ↔ ∃ p : ℤ, Prime p ∧ p ∣ m ∧ p ∣ n := by
+  rw [isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
+  conv => enter [1, 1, p]; rw [dvd_gcd_iff]
+  push_neg
+  refine ⟨fun ⟨p, hp, h⟩ ↦ ?_, fun ⟨p, hp, h⟩ ↦ ?_⟩
+  · exact ⟨↑p, Nat.prime_iff_prime_int.mp hp, mod_cast h⟩
+  · refine ⟨p.natAbs, ?_⟩
+    simp only [natCast_natAbs, abs_dvd, ← prime_iff_natAbs_prime]
+    exact ⟨hp, h⟩
+
+lemma not_isCoprime_iff_exists_prime_dvd' {m n : ℤ} :
+    ¬ IsCoprime m n ↔ ∃ p : ℕ, p.Prime ∧ ↑p ∣ m ∧ ↑p ∣ n := by
+  rw [not_isCoprime_iff_exists_prime_dvd]
+  refine ⟨fun ⟨p, hp, h⟩ ↦ ?_, fun ⟨p, hp, h⟩ ↦ ?_⟩
+  · exact ⟨p.natAbs, prime_iff_natAbs_prime.mp hp, by simpa using h⟩
+  · exact ⟨p, Nat.prime_iff_prime_int.mp hp, h⟩
 
 -- The `Nat` version of this exists: `Nat.mul_div_le`.
 -- Where should this go? Related lemmas are in Std.Data.Int.DivMod
@@ -31,9 +48,9 @@ theorem exists_gcd_eq_one (a b : ℤ) :
     have hg := gcd_pos_iff.mpr h
     have hg' : (gcd a b : ℤ) ≠ 0 := natCast_ne_zero_iff_pos.mpr hg
     refine ⟨a.gcd b, a / a.gcd b, b / a.gcd b, rfl, ?_, ?_, ?_⟩
-    · rw [← Int.mul_ediv_assoc _ gcd_dvd_left]
+    · rw [← Int.mul_ediv_assoc _ (gcd_dvd_left ..)]
       exact (Int.mul_ediv_cancel_left _ hg').symm
-    · rw [← Int.mul_ediv_assoc _ gcd_dvd_right]
+    · rw [← Int.mul_ediv_assoc _ (gcd_dvd_right ..)]
       exact (Int.mul_ediv_cancel_left _ hg').symm
     · exact gcd_div_gcd_div_gcd hg
 
@@ -59,24 +76,10 @@ theorem exists_gcd_gcd_eq_one (a b c : ℤ) :
     exact ⟨g, a₁, w * b₂, w * c₂, by rwa [hg₁] at hg, hga, by rw [hgb, hgw, mul_assoc],
       by rw [hgc, hgw, mul_assoc], by simpa only [gcd_mul_left, hg₁', mul_one] using hg'⟩
 
--- The `Nat` and `gcd_monoid` versions of this exist: `Nat.dvd_gcd_iff`, `dvd_gcd_iff`.
--- Mathlib.RingTheory.Int.Basic
-theorem dvd_gcd_iff {k : ℕ} {m n : ℤ} : k ∣ m.gcd n ↔ ↑k ∣ m ∧ ↑k ∣ n := by
-  rw [gcd_eq_natAbs, natCast_dvd, natCast_dvd]
-  exact Nat.dvd_gcd_iff
-
--- where should this go? #find_home does not help, since it uses `dvd_gcd_iff`
-/-- Two integers are not coprime if and only if there is a prime number that divides both. -/
-theorem not_isCoprime_iff_exists_prime_dvd {a b : ℤ} :
-    ¬IsCoprime a b ↔ ∃ p : ℕ, p.Prime ∧ ↑p ∣ a ∧ ↑p ∣ b := by
-  rw [isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
-  push_neg
-  simp_rw [dvd_gcd_iff]
-
 /-- Two multiples of the same prime are not coprime. -/
 theorem not_isCoprime_of_mul_prime {p : ℕ} (hp : p.Prime) (a b : ℤ) :
-    ¬IsCoprime (↑p * a) (↑p * b) :=
-  not_isCoprime_iff_exists_prime_dvd.mpr ⟨p, hp, dvd_mul_right .., dvd_mul_right ..⟩
+    ¬IsCoprime (↑p * a) (↑p * b) := by
+  simp [isCoprime_iff_gcd_eq_one, gcd_mul_left, hp.ne_one]
 
 -- Mathlib.Algebra.Squarefree
 theorem squarefree_iff_squarefree_natAbs {n : ℤ} : Squarefree n ↔ Squarefree n.natAbs := by
@@ -106,8 +109,8 @@ theorem squarefree_mul {m n : ℤ} (hmn : IsCoprime m n) :
 theorem isCoprime_of_squarefree_mul {a b : ℤ} (h : Squarefree (a * b)) : IsCoprime a b := by
   by_contra hf
   obtain ⟨p, hp, ⟨a', rfl⟩, ⟨b', rfl⟩⟩ := not_isCoprime_iff_exists_prime_dvd.mp hf
-  have hd : ↑(p * p) ∣ p * a' * (p * b') := ⟨a' * b', by push_cast; ring⟩
-  exact hp.not_isUnit (ofNat_isUnit.mp <| h p hd)
+  have hd : p * p ∣ p * a' * (p * b') := ⟨a' * b', by ring⟩
+  exact hp.not_unit (h p hd)
 
 /-- A product of two integers is squarefree if and only if they are coprime and both squarefree. -/
 lemma squarefree_mul_iff {a b : ℤ} :

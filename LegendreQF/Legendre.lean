@@ -182,15 +182,15 @@ private lemma primitive'_help₂ {a b c x y z : ℤ} (h : CoeffAss a b c)
   rw [Int.isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
   intro p hp hf
   replace hf := Int.natCast_dvd_natCast.mpr hf
-  obtain ⟨x₁, rfl⟩ : ↑p ∣ x := hf.trans Int.gcd_dvd_left
-  obtain ⟨y₁, rfl⟩ : ↑p ∣ y := hf.trans Int.gcd_dvd_right
+  obtain ⟨x₁, rfl⟩ : ↑p ∣ x := hf.trans <| Int.gcd_dvd_left ..
+  obtain ⟨y₁, rfl⟩ : ↑p ∣ y := hf.trans <| Int.gcd_dvd_right ..
   rw [add_eq_zero_iff_neg_eq,
     show -(a * (p * x₁) ^ 2 + b * (p * y₁) ^ 2) = p * (p * -(a * x₁ ^ 2 + b * y₁ ^ 2)) by ring]
     at hs
   have hpcz : ↑p ∣ c * z ^ 2 := dvd_of_mul_right_eq _ hs
   have hpz : ¬↑p ∣ z := by
     rintro ⟨z₁, rfl⟩
-    rw [Int.gcd_mul_left, Int.natAbs_ofNat, Nat.cast_mul, Int.gcd_mul_left, Int.natAbs_ofNat] at hg
+    rw [Int.gcd_mul_left, Int.natAbs_natCast, Nat.cast_mul, Int.gcd_mul_left, Int.natAbs_natCast] at hg
     exact hp.ne_one <| Nat.eq_one_of_mul_eq_one_right hg
   obtain ⟨c₁, rfl⟩ := (Int.Prime.dvd_mul' hp hpcz).resolve_right
     (fun hpz₂ ↦ hpz (Int.Prime.dvd_pow' hp hpz₂))
@@ -212,8 +212,8 @@ private lemma primitive'_help₁ {a b c x y z : ℤ} (h : CoeffAss a b c)
     rw [add_rotate] at hs
     rw [Int.gcd_comm, Int.gcd_assoc] at hg
     exact primitive'_help₂ h.rotate hs hg
-  obtain ⟨a₁, rfl⟩ : ↑p ∣ a := hf.trans Int.gcd_dvd_left
-  obtain ⟨y₁, rfl⟩ : ↑p ∣ y := hf.trans Int.gcd_dvd_right
+  obtain ⟨a₁, rfl⟩ : ↑p ∣ a := hf.trans <| Int.gcd_dvd_left ..
+  obtain ⟨y₁, rfl⟩ : ↑p ∣ y := hf.trans <| Int.gcd_dvd_right ..
   rw [add_eq_zero_iff_neg_eq,
     show -(p * a₁ * x ^ 2 + b * (p * y₁) ^ 2) = p * -(a₁ * x ^ 2 + p * (b * y₁ ^ 2)) by ring] at hs
   have hpcz : ↑p  ∣ c * z ^ 2 := dvd_of_mul_right_eq _ hs
@@ -378,10 +378,10 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
   replace h' := mul_left_cancel₀ hg₀ h'
   have hg₁ : IsCoprime a₁ b₁ := by
     by_contra hf
-    obtain ⟨p, hp, ⟨a₁, rfl⟩, ⟨b₁, rfl⟩⟩ := Int.not_isCoprime_iff_exists_prime_dvd.mp hf
+    obtain ⟨p, hp, ⟨a₁, rfl⟩, ⟨b₁, rfl⟩⟩ := Int.not_isCoprime_iff_exists_prime_dvd'.mp hf
     have H : ↑p ∣ c₁ ^ 2 * g := ⟨b₁ + a₁ * (m ^ 2 * A), by linear_combination h'⟩
     obtain ⟨c₁, rfl⟩ := Int.Prime.dvd_pow' hp (hbg.of_mul_right_left.symm.dvd_of_dvd_mul_right H)
-    simp only [Int.gcd_mul_left, Nat.cast_mul, Int.natAbs_ofNat] at h
+    simp only [Int.gcd_mul_left, Nat.cast_mul, Int.natAbs_natCast] at h
     exact hp.not_dvd_one <| dvd_of_mul_right_eq _ h
   rw [Int.gcd_mul_left, Int.isCoprime_iff_gcd_eq_one.mp hg₁, mul_one, Int.natAbs_sq,
     ← IsSquareMod.iff_natAbs, (by ring : -(g * a₁) * (g * b₁) = -a₁ * b₁ * g ^ 2),
@@ -396,7 +396,7 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
     have hsm : IsSquareMod (g * a₁ * (m ^ 2 * A)) b₁ := ⟨c₁ * g, -g, by linear_combination -g * h'⟩
     have hm : IsCoprime b₁ m := by
       by_contra hf
-      obtain ⟨p, hp, ⟨b₂, rfl⟩, ⟨m', rfl⟩⟩ := Int.not_isCoprime_iff_exists_prime_dvd.mp hf
+      obtain ⟨p, hp, ⟨b₂, rfl⟩, ⟨m', rfl⟩⟩ := Int.not_isCoprime_iff_exists_prime_dvd'.mp hf
       rw [sub_eq_iff_eq_add] at h'
       have H : ↑p ∣ c₁ ^ 2 * g := ⟨a₁ * p * m' ^ 2 * A + b₂, by linear_combination h'⟩
       obtain ⟨c₂, rfl⟩ := Int.Prime.dvd_pow' hp (hbg.symm.of_mul_left_left.dvd_of_dvd_mul_right H)
@@ -420,10 +420,10 @@ theorem condition_iii {A a b c m : ℤ} (sb : Squarefree b) (h₁ : IsSquareMod 
   have hg₁ : IsCoprime A₁ b₁ := by
     -- maybe prove a lemma; see similar statement above
     by_contra hf
-    obtain ⟨p, hp, ⟨A₂, rfl⟩, ⟨b₂, rfl⟩⟩ := Int.not_isCoprime_iff_exists_prime_dvd.mp hf
+    obtain ⟨p, hp, ⟨A₂, rfl⟩, ⟨b₂, rfl⟩⟩ := Int.not_isCoprime_iff_exists_prime_dvd'.mp hf
     have H : ↑p ∣ c₁ ^ 2 * g := ⟨b₂ + a * (m ^ 2 * A₂), by linear_combination h'⟩
     obtain ⟨c₂, rfl⟩ := Int.Prime.dvd_pow' hp (hbg.of_mul_right_left.symm.dvd_of_dvd_mul_right H)
-    simp only [Int.gcd_mul_left, Nat.cast_mul, Int.natAbs_ofNat] at h
+    simp only [Int.gcd_mul_left, Nat.cast_mul, Int.natAbs_natCast] at h
     exact hp.not_dvd_one <| dvd_of_mul_right_eq _ h
   rw [Int.gcd_mul_left, Int.isCoprime_iff_gcd_eq_one.mp hg₁, mul_one, Int.natAbs_sq,
     ← IsSquareMod.iff_natAbs, show -(g * A₁) * (g * b₁) = -A₁ * b₁ * g ^ 2 by ring,
@@ -467,7 +467,7 @@ theorem neg_one_of_lt {a b : ℤ} (sa : Squarefree a) (sb : Squarefree b) (hb : 
   rcases lt_trichotomy A b with hAb | rfl | hAb
   · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at b₃
     exact (ih b (Nat.cast_lt.mp hba) _ sf hA sb (Nat.cast_lt.mpr hAb) b₂ b₁ b₃).swap₁₂
-  · rw [neg_mul, Int.gcd_self, Int.natAbs_ofNat, ← sq, Int.neg_ediv_of_dvd (Int.dvd_refl _),
+  · rw [neg_mul, Int.gcd_self, Int.natAbs_natCast, ← sq, Int.neg_ediv_of_dvd (Int.dvd_refl _),
         Int.ediv_self (sq_pos_of_ne_zero hb.ne').ne'] at b₃
     exact of_equal hb b₃
   · exact ih A (Nat.cast_lt.mp hAa) _ sb hb sf (Nat.cast_lt.mpr hAb) b₁ b₂ b₃

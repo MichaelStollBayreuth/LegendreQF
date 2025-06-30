@@ -153,7 +153,7 @@ theorem exists_le_half {a m : ℤ} (hm : 0 < m) (h : IsSquareMod a m) :
     ∃ b c : ℤ, a - b ^ 2 = m * c ∧ 0 ≤ b ∧ b ≤ m / 2 := by
   obtain ⟨u, v, h⟩ := h
   rw [← Int.emod_add_ediv' u m] at h
-  rcases le_or_lt (u % m) (m / 2) with hu | hu
+  rcases le_or_gt (u % m) (m / 2) with hu | hu
   · exact ⟨u % m, v + 2 * (u % m) * (u / m) + (u / m) ^ 2 * m, by linear_combination h,
       u.emod_nonneg hm.ne', hu⟩
   · refine ⟨m - u % m, v - 2 * (m - u % m) * (1 + u / m) + (1 + u / m) ^ 2 * m,

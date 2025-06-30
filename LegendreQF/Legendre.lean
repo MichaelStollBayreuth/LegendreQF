@@ -260,10 +260,10 @@ theorem condition₁_iff {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠
       0 < a ∧ 0 < b ∧ c < 0 ∨ 0 < a ∧ b < 0 ∧ 0 < c ∨ a < 0 ∧ 0 < b ∧ 0 < c ∨
         a < 0 ∧ b < 0 ∧ 0 < c ∨ a < 0 ∧ 0 < b ∧ c < 0 ∨ 0 < a ∧ b < 0 ∧ c < 0 := by
   dsimp only [Condition₁]
-  rcases ha.lt_or_lt with ha₁ | ha₁ <;>
+  rcases ha.lt_or_gt with ha₁ | ha₁ <;>
     simp only [asymm ha₁, false_and, not_false_eq_true, ha₁, true_and, not_and, not_lt, or_false,
       false_or, not_and, and_true] <;>
-    rcases hb.lt_or_lt with hb₁ | hb₁ <;>
+    rcases hb.lt_or_gt with hb₁ | hb₁ <;>
     simp only [asymm hb₁, le_iff_eq_or_lt, hc, false_or, false_implies, false_and, hb₁, true_and,
       lt_or_lt_iff_ne, ne_eq, hc.symm, not_false_eq_true, or_true, hc.symm, true_implies, or_false]
 

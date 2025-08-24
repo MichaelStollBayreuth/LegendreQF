@@ -264,8 +264,7 @@ theorem condition₁_iff {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠
     simp only [asymm ha₁, false_and, not_false_eq_true, ha₁, true_and, not_and, not_lt, or_false,
       false_or, not_and, and_true] <;>
     rcases hb.lt_or_gt with hb₁ | hb₁ <;>
-    simp only [asymm hb₁, le_iff_eq_or_lt, hc, false_or, false_implies, false_and, hb₁, true_and,
-      lt_or_lt_iff_ne, ne_eq, hc.symm, not_false_eq_true, or_true, hc.symm, true_implies, or_false]
+    simp [asymm hb₁, le_iff_eq_or_lt, hc, hb₁, hc.symm]
 
 /-- This is the second solubility condition in Legendre's theorem: the negative product
 of each pair of coefficients is a square modulo the third. -/

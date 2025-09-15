@@ -347,7 +347,7 @@ theorem descent {a b : ℤ} (hb : 0 < b) (hba : b < a) (h : IsSquareMod b a) :
   have hA₀ : 0 < A := pos_of_mul_pos_right (by rwa [ht, neg_pos]) (sq_nonneg m)
   refine ⟨A, c, m, by linear_combination -h₁ -a * ht, hA, hA₀, ?_⟩
   replace h₃ : 2 * c ≤ a :=
-    ((mul_le_mul_left zero_lt_two).mpr h₃).trans (Int.mul_ediv_le zero_lt_two a)
+    ((mul_le_mul_iff_right₀ zero_lt_two).mpr h₃).trans (Int.mul_ediv_le zero_lt_two a)
   have H : a * (4 * m ^ 2 * A) < a * a :=
     calc a * (4 * m ^ 2 * A)
       _ = (2 * c) ^ 2 - 4 * b := by linear_combination 4 * h₁ + 4 * a * ht
@@ -454,22 +454,23 @@ theorem neg_one_of_lt {a b : ℤ} (sa : Squarefree a) (sb : Squarefree b) (hb : 
     (h₃ : IsSquareMod (-a * b / (a.gcd b : ℤ) ^ 2) (a.gcd b : ℤ)) : IsSoluble a b (-1) := by
   lift b to ℕ using hb.le
   lift a to ℕ using (hb.trans hba).le
-  induction' a using Nat.strong_induction_on with a ih generalizing b
-  obtain ⟨A, c, m, h', sf, hA, hAa⟩ := descent hb hba h₂
-  rcases eq_or_ne m 0 with rfl | hm
-  · exact ⟨0, 1, c, by linear_combination -h', .inr (.inl one_ne_zero)⟩
-  have b₁ := condition_i sa sb h₁ h₃ h'
-  have b₂ : IsSquareMod (b : ℤ) A := ⟨c, -a * m ^ 2, by linear_combination -h'⟩
-  have b₃ := condition_iii sb h₁ h'
-  lift A to ℕ using hA.le
-  refine transfer hm sf.ne_zero sa.ne_zero ?_ h'
-  rcases lt_trichotomy A b with hAb | rfl | hAb
-  · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at b₃
-    exact (ih b (Nat.cast_lt.mp hba) _ sf hA sb (Nat.cast_lt.mpr hAb) b₂ b₁ b₃).swap₁₂
-  · rw [neg_mul, Int.gcd_self, Int.natAbs_natCast, ← sq, Int.neg_ediv_of_dvd (Int.dvd_refl _),
-        Int.ediv_self (sq_pos_of_ne_zero hb.ne').ne'] at b₃
-    exact of_equal hb b₃
-  · exact ih A (Nat.cast_lt.mp hAa) _ sb hb sf (Nat.cast_lt.mpr hAb) b₁ b₂ b₃
+  induction a using Nat.strong_induction_on generalizing b with
+  | h a ih =>
+    obtain ⟨A, c, m, h', sf, hA, hAa⟩ := descent hb hba h₂
+    rcases eq_or_ne m 0 with rfl | hm
+    · exact ⟨0, 1, c, by linear_combination -h', .inr (.inl one_ne_zero)⟩
+    have b₁ := condition_i sa sb h₁ h₃ h'
+    have b₂ : IsSquareMod (b : ℤ) A := ⟨c, -a * m ^ 2, by linear_combination -h'⟩
+    have b₃ := condition_iii sb h₁ h'
+    lift A to ℕ using hA.le
+    refine transfer hm sf.ne_zero sa.ne_zero ?_ h'
+    rcases lt_trichotomy A b with hAb | rfl | hAb
+    · rw [neg_mul, mul_comm, ← neg_mul, Int.gcd_comm] at b₃
+      exact (ih b (Nat.cast_lt.mp hba) _ sf hA sb (Nat.cast_lt.mpr hAb) b₂ b₁ b₃).swap₁₂
+    · rw [neg_mul, Int.gcd_self, Int.natAbs_natCast, ← sq, Int.neg_ediv_of_dvd (Int.dvd_refl _),
+          Int.ediv_self (sq_pos_of_ne_zero hb.ne').ne'] at b₃
+      exact of_equal hb b₃
+    · exact ih A (Nat.cast_lt.mp hAa) _ sb hb sf (Nat.cast_lt.mpr hAb) b₁ b₂ b₃
 
 /-- This is the (interesting direction of) the variant of Legendre's Theorem:
 if `a` and `b` are positive and squarefree, `a` is a square modulo `b`, `b` is a square

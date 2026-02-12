@@ -156,14 +156,8 @@ theorem exists_le_half {a m : ℤ} (hm : 0 < m) (h : IsSquareMod a m) :
   rcases le_or_gt (u % m) (m / 2) with hu | hu
   · exact ⟨u % m, v + 2 * (u % m) * (u / m) + (u / m) ^ 2 * m, by linear_combination h,
       u.emod_nonneg hm.ne', hu⟩
-  · refine ⟨m - u % m, v - 2 * (m - u % m) * (1 + u / m) + (1 + u / m) ^ 2 * m,
-      by linear_combination h, sub_nonneg.mpr (u.emod_lt_of_pos hm).le, ?_⟩
-    nth_rewrite 1 [← Int.ediv_mul_add_emod m 2]
-    rw [sub_le_iff_le_add, ← sub_le_iff_le_add',
-      show m / 2 * 2 + m % 2 - m / 2 = m / 2 + m % 2 by ring]
-    change m / 2 + 1 ≤ u % m at hu
-    have H : m % 2 ≤ 1 := Int.lt_add_one_iff.mp (m.emod_lt_of_pos zero_lt_two)
-    exact (add_le_add_left H (m / 2)).trans hu
+  · exact ⟨m - u % m, v - 2 * (m - u % m) * (1 + u / m) + (1 + u / m) ^ 2 * m,
+      by linear_combination h, sub_nonneg.mpr (u.emod_lt_of_pos hm).le, by lia⟩
 
 /-- `a` is a square modulo `m` if and only if it is a square modulo `m.natAbs`. -/
 theorem iff_natAbs {a m : ℤ} : IsSquareMod a m ↔ IsSquareMod a m.natAbs := by

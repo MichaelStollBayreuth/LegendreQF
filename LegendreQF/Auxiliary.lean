@@ -15,7 +15,7 @@ lemma not_isCoprime_iff_exists_prime_dvd {m n : ℤ} :
     ¬ IsCoprime m n ↔ ∃ p : ℤ, Prime p ∧ p ∣ m ∧ p ∣ n := by
   rw [isCoprime_iff_gcd_eq_one, Nat.eq_one_iff_not_exists_prime_dvd]
   conv => enter [1, 1, p]; rw [dvd_gcd_iff]
-  push_neg
+  push Not
   refine ⟨fun ⟨p, hp, h⟩ ↦ ?_, fun ⟨p, hp, h⟩ ↦ ?_⟩
   · exact ⟨↑p, Nat.prime_iff_prime_int.mp hp, mod_cast h⟩
   · refine ⟨p.natAbs, ?_⟩

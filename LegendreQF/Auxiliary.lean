@@ -73,6 +73,7 @@ theorem exists_gcd_gcd_eq_one (a b c : ℤ) :
       replace hg₀ : 0 < g :=
         (eq_or_lt_of_le <| by rw [hg]; exact Nat.cast_nonneg _).resolve_left hg₀.symm
       exact nonneg_of_mul_nonneg_right (hgw ▸ hg₁₀) hg₀
+    replace hg' : a₁.gcd w.natAbs = 1 := by rwa [natAbs_of_nonneg hw₁]
     exact ⟨g, a₁, w * b₂, w * c₂, by rwa [hg₁] at hg, hga, by rw [hgb, hgw, mul_assoc],
       by rw [hgc, hgw, mul_assoc], by simpa only [gcd_mul_left, hg₁', mul_one] using hg'⟩
 

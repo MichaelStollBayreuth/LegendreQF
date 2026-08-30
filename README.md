@@ -2,7 +2,7 @@
 Lean code formalizing a proof of Legendre's theorem on diagonal ternary quadratic forms
 
 This repository contains *lean3* code (using mathlib3; in the `lean3` directory) and
-*lean4* code (using mathlib4; in the `lean4` directory)
+*lean4* code (using mathlib4; in the `LegendreQF` directory)
 formalizing a proof of *Legendre's Theorem* on diagonal ternary quadratic forms:
 
  **Theorem.** Let $a, b, c$ be squarefree integers that are coprime in pairs.

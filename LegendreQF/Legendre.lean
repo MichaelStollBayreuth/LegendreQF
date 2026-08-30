@@ -201,7 +201,7 @@ private lemma primitive'_help₂ {a b c x y z : ℤ} (h : CoeffAss a b c)
     (fun hpz₂' ↦ hpz (Int.Prime.dvd_pow' hp hpz₂'))
   replace h := h.2.2.2.2.2
   rw [← mul_assoc] at h
-  exact (Nat.prime_iff_prime_int.mp hp).not_unit (h p <| dvd_mul_right ((p : ℤ) * p) c₂)
+  exact (Nat.prime_iff_prime_int.mp hp).not_isUnit (h p <| dvd_mul_right ((p : ℤ) * p) c₂)
 
 private lemma primitive'_help₁ {a b c x y z : ℤ} (h : CoeffAss a b c)
     (hs : a * x ^ 2 + b * y ^ 2 + c * z ^ 2 = 0) (hg : x.gcd (y.gcd z) = 1) : IsCoprime a y := by

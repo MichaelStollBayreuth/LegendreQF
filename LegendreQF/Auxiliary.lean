@@ -82,44 +82,6 @@ theorem not_isCoprime_of_mul_prime {p : ℕ} (hp : p.Prime) (a b : ℤ) :
     ¬IsCoprime (↑p * a) (↑p * b) := by
   simp [isCoprime_iff_gcd_eq_one, gcd_mul_left, hp.ne_one]
 
--- Mathlib.Algebra.Squarefree
-theorem squarefree_iff_squarefree_natAbs {n : ℤ} : Squarefree n ↔ Squarefree n.natAbs := by
-  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
-  · exact ofNat_isUnit.mp <| h x <| dvd_natAbs.mp <| ofNat_dvd_right.mpr hx
-  · rw [← natAbs_dvd_natAbs, natAbs_mul] at hx
-    exact isUnit_iff_natAbs_eq.mpr <| Nat.isUnit_iff.mp <| h x.natAbs hx
-
--- Mathlib.RingTheory.Coprime.Basic
-theorem isCoprime_abs {m n : ℤ} : IsCoprime m n ↔ IsCoprime |m| |n| := by
-  rcases abs_choice m with hm | hm <;> rcases abs_choice n with hn | hn <;> rw [hm, hn]
-  · exact (IsCoprime.neg_right_iff m n).symm
-  · exact (IsCoprime.neg_left_iff m n).symm
-  · exact (IsCoprime.neg_neg_iff m n).symm
-
-theorem isCoprime_iff_coprime_natAbs {m n : ℤ} :
-    IsCoprime m n ↔ Nat.Coprime m.natAbs n.natAbs := by
-  rw [isCoprime_abs, abs_eq_natAbs, abs_eq_natAbs, Nat.isCoprime_iff_coprime]
-
--- The `Nat` version of this exists: `Nat.squarefree_mul`.
-theorem squarefree_mul {m n : ℤ} (hmn : IsCoprime m n) :
-    Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
-  simp_rw [squarefree_iff_squarefree_natAbs, natAbs_mul]
-  exact Nat.squarefree_mul (isCoprime_iff_coprime_natAbs.mp hmn)
-
-/-- If the product of two integers is squarefree, then the integers are coprime. -/
-theorem isCoprime_of_squarefree_mul {a b : ℤ} (h : Squarefree (a * b)) : IsCoprime a b := by
-  by_contra hf
-  obtain ⟨p, hp, ⟨a', rfl⟩, ⟨b', rfl⟩⟩ := not_isCoprime_iff_exists_prime_dvd.mp hf
-  have hd : p * p ∣ p * a' * (p * b') := ⟨a' * b', by ring⟩
-  exact hp.not_unit (h p hd)
-
-/-- A product of two integers is squarefree if and only if they are coprime and both squarefree. -/
-lemma squarefree_mul_iff {a b : ℤ} :
-    Squarefree (a * b) ↔ IsCoprime a b ∧ Squarefree a ∧ Squarefree b := by
-  refine ⟨fun H ↦ ?_, fun ⟨hab, ha, hb⟩ ↦ (squarefree_mul hab).mpr ⟨ha, hb⟩⟩
-  have := isCoprime_of_squarefree_mul H
-  exact ⟨this, (squarefree_mul this).mp H⟩
-
 -- The `Nat` version of this exists: `Nat.sq_mul_squarefree`.
 /-- Any integer can be written as the product of a square and a squarefree integer. -/
 theorem sq_mul_squarefree (n : ℤ) : ∃ a b : ℤ, b ^ 2 * a = n ∧ Squarefree a := by

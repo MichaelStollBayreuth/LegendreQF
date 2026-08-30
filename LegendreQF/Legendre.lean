@@ -149,7 +149,7 @@ def CoeffAss (a b c : ℤ) : Prop :=
   IsCoprime a b ∧ IsCoprime b c ∧ IsCoprime c a ∧ Squarefree a ∧ Squarefree b ∧ Squarefree c
 
 lemma coeffAss_iff {a b c : ℤ} : CoeffAss a b c ↔ Squarefree (a * b * c) := by
-  simp_rw [Int.squarefree_mul_iff, IsCoprime.mul_left_iff, CoeffAss]
+  simp_rw [squarefree_mul_iff, isRelPrime_iff_isCoprime, IsCoprime.mul_left_iff, CoeffAss]
   tauto
 
 namespace CoeffAss
@@ -190,7 +190,7 @@ private lemma primitive'_help₂ {a b c x y z : ℤ} (h : CoeffAss a b c)
   have hpcz : ↑p ∣ c * z ^ 2 := dvd_of_mul_right_eq _ hs
   have hpz : ¬↑p ∣ z := by
     rintro ⟨z₁, rfl⟩
-    rw [Int.gcd_mul_left, Int.natAbs_natCast, Nat.cast_mul, Int.gcd_mul_left, Int.natAbs_natCast] at hg
+    simp only [Int.gcd_mul_left, Int.natAbs_natCast, Nat.cast_mul] at hg
     exact hp.ne_one <| Nat.eq_one_of_mul_eq_one_right hg
   obtain ⟨c₁, rfl⟩ := (Int.Prime.dvd_mul' hp hpcz).resolve_right
     (fun hpz₂ ↦ hpz (Int.Prime.dvd_pow' hp hpz₂))
@@ -371,8 +371,8 @@ theorem condition_i {A a b c m : ℤ} (sa : Squarefree a) (sb : Squarefree b) (h
     IsSquareMod A b := by
   obtain ⟨g, a₁, b₁, c₁, hg, rfl, rfl, rfl, h⟩ := Int.exists_gcd_gcd_eq_one a b c
   have hg₀ : g ≠ 0 := left_ne_zero_of_mul sa.ne_zero
-  have hag := Int.isCoprime_of_squarefree_mul sa
-  have hbg := Int.isCoprime_of_squarefree_mul sb
+  have hag := (IsRelPrime.of_squarefree_mul sa).isCoprime
+  have hbg := (IsRelPrime.of_squarefree_mul sb).isCoprime
   replace h' : g * (c₁ ^ 2 * g - b₁) = g * (a₁ * (m ^ 2 * A)) := by linear_combination h'
   replace h' := mul_left_cancel₀ hg₀ h'
   have hg₁ : IsCoprime a₁ b₁ := by
@@ -413,7 +413,7 @@ theorem condition_iii {A a b c m : ℤ} (sb : Squarefree b) (h₁ : IsSquareMod 
     IsSquareMod (-A * b / (A.gcd b : ℤ) ^ 2) (A.gcd b : ℤ) := by
   obtain ⟨g, A₁, b₁, c₁, hg, rfl, rfl, rfl, h⟩ := Int.exists_gcd_gcd_eq_one A b c
   have hg₀ : g ≠ 0 := left_ne_zero_of_mul sb.ne_zero
-  have hbg := Int.isCoprime_of_squarefree_mul sb
+  have hbg := (IsRelPrime.of_squarefree_mul sb).isCoprime
   replace h' : g * (c₁ ^ 2 * g - b₁) = g * (a * (m ^ 2 * A₁)) := by linear_combination h'
   replace h' := mul_left_cancel₀ hg₀ h'
   have hg₁ : IsCoprime A₁ b₁ := by
@@ -498,11 +498,13 @@ theorem sufficient' {a b c : ℤ} (ha₁ : 0 < a) (hb₁ : 0 < b) (hc₁ : 0 < c
   rw [IsSquareMod.neg_iff, neg_mul] at hc₂
   rw [show -c = -1 * c by simp only [neg_mul, one_mul], ← IsSoluble.mul_mul_iff_mul hc₁.ne']
   refine neg_one (mul_pos ha₁ hc₁) (mul_pos hb₁ hc₁)
-    ((Int.squarefree_mul hca.symm).mpr ⟨ha, hc⟩) ((Int.squarefree_mul hbc).mpr ⟨hb, hc⟩)
+    (squarefree_mul_iff.mpr ⟨hca.symm.isRelPrime, ha, hc⟩)
+    (squarefree_mul_iff.mpr ⟨hbc.isRelPrime, hb, hc⟩)
     (hb₂.mul_of_coprime (isSquareMod_mul_self a c) hbc)
     (ha₂.mul_of_coprime (isSquareMod_mul_self b c) hca.symm) ?_
   have hg : ((a * c).gcd (b * c) : ℤ) = c := by
-    rw [Int.gcd_mul_right, Int.isCoprime_iff_gcd_eq_one.mp hab, one_mul, Int.natAbs_of_nonneg hc₁.le]
+    rw [Int.gcd_mul_right, Int.isCoprime_iff_gcd_eq_one.mp hab, one_mul,
+      Int.natAbs_of_nonneg hc₁.le]
   rwa [hg, neg_mul, show a * c * (b * c) = a * b * c ^ 2 by ring, ← neg_mul,
     Int.mul_ediv_cancel _ (pow_ne_zero 2 hc₁.ne')]
 

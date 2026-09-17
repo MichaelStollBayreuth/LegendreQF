@@ -85,7 +85,7 @@ theorem not_isCoprime_of_mul_prime {p : ℕ} (hp : p.Prime) (a b : ℤ) :
 -- The `Nat` version of this exists: `Nat.sq_mul_squarefree`.
 /-- Any integer can be written as the product of a square and a squarefree integer. -/
 theorem sq_mul_squarefree (n : ℤ) : ∃ a b : ℤ, b ^ 2 * a = n ∧ Squarefree a := by
-  obtain ⟨a', b', h, hs⟩ := Nat.sq_mul_squarefree n.natAbs
+  obtain ⟨b', a', h, hs⟩ := exists_sq_mul_squarefree n.natAbs
   rcases natAbs_eq n with hn | hn
   · exact ⟨a', b', by rw [hn]; exact_mod_cast h, squarefree_natCast.mpr hs⟩
   · exact ⟨-a', b', by rw [hn, ← h]; push_cast; ring, (squarefree_natCast.mpr hs).neg⟩

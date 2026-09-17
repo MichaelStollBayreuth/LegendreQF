@@ -343,7 +343,7 @@ theorem descent {a b : ℤ} (hb : 0 < b) (hba : b < a) (h : IsSquareMod b a) :
   rcases (show t ≤ 0 by nlinarith).eq_or_lt with rfl | htn
   · change 1 ≤ b at hb
     exact ⟨1, c, 0, by linear_combination -h₁, squarefree_one, zero_lt_one, hb.trans_lt hba⟩
-  obtain ⟨A, m, ht, hA⟩ := Int.sq_mul_squarefree (-t)
+  obtain ⟨m, A, ht, hA⟩ := exists_sq_mul_squarefree (-t)
   have hA₀ : 0 < A := pos_of_mul_pos_right (by rwa [ht, neg_pos]) (sq_nonneg m)
   refine ⟨A, c, m, by linear_combination -h₁ -a * ht, hA, hA₀, ?_⟩
   replace h₃ : 2 * c ≤ a :=

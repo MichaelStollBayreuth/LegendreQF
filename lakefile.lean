@@ -2,11 +2,13 @@ import Lake
 open Lake DSL
 
 package «legendre_QF» {
-  -- add any package configuration options here
+  -- The files predate the module system; this silences Lake's "consider adding `module`"
+  -- warning on every Mathlib import.
+  allowNonModules := true
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.34.0"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.35.0"
 
 @[default_target]
 lean_lib «LegendreQF» {

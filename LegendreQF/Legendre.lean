@@ -347,7 +347,7 @@ theorem descent {a b : ℤ} (hb : 0 < b) (hba : b < a) (h : IsSquareMod b a) :
   have hA₀ : 0 < A := pos_of_mul_pos_right (by rwa [ht, neg_pos]) (sq_nonneg m)
   refine ⟨A, c, m, by linear_combination -h₁ -a * ht, hA, hA₀, ?_⟩
   replace h₃ : 2 * c ≤ a :=
-    ((mul_le_mul_iff_right₀ zero_lt_two).mpr h₃).trans (Int.mul_ediv_le zero_lt_two a)
+    ((mul_le_mul_iff_right₀ zero_lt_two).mpr h₃).trans (Int.mul_ediv_self_le two_ne_zero)
   have H : a * (4 * m ^ 2 * A) < a * a :=
     calc a * (4 * m ^ 2 * A)
       _ = (2 * c) ^ 2 - 4 * b := by linear_combination 4 * h₁ + 4 * a * ht

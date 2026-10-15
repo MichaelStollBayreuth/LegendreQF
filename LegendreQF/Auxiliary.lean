@@ -29,13 +29,6 @@ lemma not_isCoprime_iff_exists_prime_dvd' {m n : ℤ} :
   · exact ⟨p.natAbs, prime_iff_natAbs_prime.mp hp, by simpa using h⟩
   · exact ⟨p, Nat.prime_iff_prime_int.mp hp, h⟩
 
--- The `Nat` version of this exists: `Nat.mul_div_le`.
--- Where should this go? Related lemmas are in Std.Data.Int.DivMod
--- Maybe Mathlib.Data.Int.Div?
-theorem mul_ediv_le {m : ℤ} (h : 0 < m) (n : ℤ) : m * (n / m) ≤ n := by
-  nth_rw 2 [← Int.mul_ediv_add_emod n m]
-  simp only [emod_nonneg _ h.ne', le_add_iff_nonneg_right]
-
 -- compare `Nat.exists_coprime` and `Nat.exists_coprime'`
 /-- A pair of integers `a` and `b` can be made coprime by dividing them by their gcd. -/
 theorem exists_gcd_eq_one (a b : ℤ) :
